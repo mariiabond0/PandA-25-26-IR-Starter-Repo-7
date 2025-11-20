@@ -9,7 +9,7 @@ This part builds on your Part 6 solution. The key goal is to replace composite o
 ## Run the app
 
 ```bash
-python -m part6.app
+python -m part7.app
 ```
 
 ## What to implement (ToDos)

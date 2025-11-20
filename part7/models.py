@@ -52,6 +52,8 @@ class LineMatch:
         self.text = text
         self.spans = spans
 
+    def copy(self):
+        return LineMatch(self.line_no, self.text, self.spans)
 
 class SearchResult:
     def __init__(self, title: str, title_spans: List[Tuple[int, int]], line_matches: List[LineMatch], matches: int) -> None:

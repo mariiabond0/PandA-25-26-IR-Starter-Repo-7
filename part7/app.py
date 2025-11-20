@@ -104,6 +104,8 @@ def combine_results(result1: SearchResult, result2: SearchResult) -> SearchResul
     )
 
     # Merge line_matches by line number
+
+    # ToDo 1: Instead of using a dictionary, e.g., dict(lm), copy the line match, e.g., lm.copy()!
     lines_by_no = {lm["line_no"]: dict(lm) for lm in result1["line_matches"]}
     for lm in result2["line_matches"]:
         ln = lm["line_no"]
@@ -206,14 +208,24 @@ def load_config() -> Configuration:
     """
     config_file_path = module_relative_path("config.json")
 
-    config = DEFAULT_CONFIG.copy()
+    cfg = DEFAULT_CONFIG.copy()
     try:
         with open(config_file_path) as config_file:
-            config.update(json.load(config_file))
-    except FileNotFoundError as e:
-        print(f"Reading config.json failed. Reason: {e}. Using default configuration.")
+            cfg.update(json.load(config_file))
+    except FileNotFoundError:
+        # File simply doesn't exist yet → quiet, just use defaults
+        print("No config.json found. Using default configuration.")
+        return cfg
+    except json.JSONDecodeError:
+        # File exists but is not valid JSON
+        print("config.json is invalid. Using default configuration.")
+        return cfg
+    except OSError:
+        # Any other OS / IO problem (permissions, disk issues, etc.)
+        print("Could not read config.json. Using default configuration.")
+        return cfg
 
-    return config
+    return cfg
 
 def save_config(cfg: Configuration) -> None:
     """ToDo 0:
@@ -224,8 +236,8 @@ def save_config(cfg: Configuration) -> None:
     try:
         with open(config_file_path, "w") as config_file:
             json.dump(cfg, config_file, indent=4)
-    except FileNotFoundError as e:
-        print(f"Writing config.json failed. Reason: {e}.")
+    except OSError:
+        print(f"Writing config.json failed.")
 
 # ---------- CLI loop ----------
 
@@ -307,6 +319,8 @@ def main() -> None:
                     # Checking each sonnet individually
                     combined_result = combined_results[i]
                     result = results[i]
+
+                    # ToDo 2: Use dot notation instead of key access of the search result
 
                     if config.search_mode == "AND":
                         if combined_result["matches"] > 0 and result["matches"] > 0:
