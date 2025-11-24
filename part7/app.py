@@ -291,7 +291,7 @@ def main() -> None:
     sonnets = load_sonnets()
     end = time.perf_counter()
     elapsed = (end - start) * 1000
-    print(f"Loaded {len(sonnets)} sonnets. It took {elapsed:.2f} ms.")
+    print(f"Loaded {len(sonnets)} sonnets. \n It took {elapsed:.2f} ms.")
 
     while True:
         try:
