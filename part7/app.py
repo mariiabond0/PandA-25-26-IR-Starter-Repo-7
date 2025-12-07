@@ -19,7 +19,7 @@ import urllib.request
 import urllib.error
 
 from part7.constants import BANNER, HELP, POETRYDB_URL
-from part7.models import Sonnet, SearchResult, Configuration
+from part7.models import Sonnet, SearchResult, Configuration, LineMatch
 
 def find_spans(text: str, pattern: str):
     """Return [(start, end), ...] for all (possibly overlapping) matches.
@@ -63,39 +63,6 @@ def ansi_highlight(text: str, spans):
         i = e
     out.append(text[i:])
     return "".join(out)
-
-class LineMatch:
-    def __init__(self, line_no: int, text: str, spans):
-        self.line_no = line_no
-        self.text = text
-        self.spans = spans
-
-    def __repr__(self):
-        return f"LineMatch(line_no={self.line_no}, spans={self.spans}, text={self.text!r})"
-
-    def copy(self):
-        return LineMatch(self.line_no, self.text, self.spans.copy())
-
-
-class SearchResult:
-    def __init__(self, title: str, title_spans,
-                 line_matches: List[LineMatch], matches: int):
-        self.title = title
-        self.title_spans = title_spans
-        self.line_matches = line_matches
-        self.matches = matches
-
-    def __repr__(self):
-        return (f"SearchResult(title={self.title!r}, title_spans={self.title_spans}, "
-                f"line_matches={self.line_matches}, matches={self.matches})")
-
-    def copy(self):
-        return SearchResult(
-            self.title,
-            self.title_spans.copy(),
-            [lm.copy() for lm in self.line_matches],
-            self.matches
-        )
 
 def search_sonnet(sonnet: Sonnet, query: str) -> SearchResult:
     title_raw = str(sonnet["title"])
@@ -275,7 +242,7 @@ def save_config(cfg: Configuration) -> None:
     config_file_path = module_relative_path("config.json")
     try:
         with open(config_file_path, "w") as config_file:
-            json.dump(cfg, config_file, indent=4)
+            json.dump(cfg.__dict__, config_file, indent=4)
     except OSError:
         print(f"Writing config.json failed.")
 
