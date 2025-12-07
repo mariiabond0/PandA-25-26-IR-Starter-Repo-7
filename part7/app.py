@@ -101,14 +101,16 @@ def combine_results(result1: SearchResult, result2: SearchResult) -> SearchResul
     # Merge line_matches by line number
 
     # ToDo 1: Instead of using a dictionary, e.g., dict(lm), copy the line match, e.g., lm.copy()!
-    lines_by_no = {lm.line_no: LineMatch(lm.line_no, lm.text, lm.spans.copy()) for lm in combined.line_matches}
+    #lines_by_no = {lm.line_no: LineMatch(lm.line_no, lm.text, lm.spans.copy()) for lm in combined.line_matches}
+    lines_by_no = {lm.line_no: lm for lm in combined.line_matches}
     for lm in result2.line_matches:
         ln = lm.line_no
         if ln in lines_by_no:
             # extend spans & keep original text
             lines_by_no[ln].spans.extend(lm.spans)
         else:
-            lines_by_no[ln] = LineMatch(lm.line_no, lm.text, lm.spans.copy())
+            #lines_by_no[ln] = LineMatch(lm.line_no, lm.text, lm.spans.copy())
+            lines_by_no[lm.line_no] = lm.copy()
 
     combined.line_matches = sorted(lines_by_no.values(), key=lambda lm: lm.line_no)
 
