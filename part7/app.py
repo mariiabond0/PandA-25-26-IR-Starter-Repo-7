@@ -110,7 +110,7 @@ def combine_results(result1: SearchResult, result2: SearchResult) -> SearchResul
             lines_by_no[ln].spans.extend(lm.spans)
         else:
             #lines_by_no[ln] = LineMatch(lm.line_no, lm.text, lm.spans.copy())
-            lines_by_no[lm.line_no] = lm.copy()
+            lines_by_no[ln] = lm.copy()
 
     combined.line_matches = sorted(lines_by_no.values(), key=lambda lm: lm.line_no)
 
